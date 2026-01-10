@@ -45,17 +45,13 @@ public class MainActivity extends AppCompatActivity {
         sceneView.setScene(scene);
 
         Camera camera = new Camera(
-                0.0,        // latitude (ekvatorn)
-                0.0,        // longitude (Greenwich)
-                30_000_000, // altitude i meter (lagom för hel planet)
-                0.0,        // heading
-                0.0,        // pitch = 0 → rakt mot planetens centrum
-                0.0         // roll
+                60.6749,   // latitude (Gävle)
+                17.1413,   // longitude
+                20_000.0,   // altitude in meters (zoomed in)
+                0.0,       // heading (north)
+                0.0,      // pitch (tilt for 3D feel)
+                0.0        // roll
         );
-
-        sceneView.setViewpointCamera(camera);
-
-        sceneView.setViewpointCamera(camera);
 
         sceneView.setViewpointCamera(camera);
     }
