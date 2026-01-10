@@ -1,15 +1,22 @@
 // ESRI API nyckel: AAPTxy8BH1VEsoebNVZXo8HurGuzNiuipj3FeKc7J3bGv8PxaLmSPdL30j-EBd9QLoGMD_VzMMqRVcQxkejHMwvYAPzmagdF8iDpZwAUiIQlizCbl8yghTT45j_VO7pOHA4onCcwzIoBWRBi3urDOLYz28bkKbm-Z321SONwSwbObxe_OAGCpOorwmIq4JTpNLhwgPfp49fwIAl0Sxu5HvKJhQ1LRTdO8GjxwTI555-IKuE.AT1_5p5pSRQ3
+// OpenWeather API nyckel: 27339e03b1ff3e028133a088da401eac
+// ESRI API nyckel: (lägg din nyckel här om du kör "dev mode" lokalt – committa inte till publikt git)
 
 package com.example.weatherapp;
 
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
+import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.mapping.ArcGISTiledElevationSource;
@@ -19,7 +26,12 @@ import com.esri.arcgisruntime.mapping.Surface;
 import com.esri.arcgisruntime.mapping.view.Camera;
 import com.esri.arcgisruntime.mapping.view.DefaultSceneViewOnTouchListener;
 import com.esri.arcgisruntime.mapping.view.SceneView;
+import com.esri.arcgisruntime.mapping.Viewpoint;
+import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
+import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
+import com.esri.arcgisruntime.tasks.geocode.LocatorTask;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.json.JSONObject;
 
@@ -27,17 +39,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import androidx.drawerlayout.widget.DrawerLayout;
-import android.widget.ImageButton;
-import androidx.core.view.GravityCompat;
-import android.widget.Button;
-
-
-// ESRI API nyckel: (lägg din nyckel här om du kör "dev mode" lokalt – committa inte till publikt git)
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,27 +51,45 @@ public class MainActivity extends AppCompatActivity {
     private static final String OPENWEATHER_API_KEY = "27339e03b1ff3e028133a088da401eac";
 
     private SceneView sceneView;
-    private SwitchMaterial switchPick;
-    private TextView txtResult;
-
-    private volatile boolean pickEnabled = false;
-
-    private final ExecutorService networkExecutor = Executors.newSingleThreadExecutor();
 
     private DrawerLayout drawerLayout;
     private ImageButton btnMenu;
 
+    private SwitchMaterial switchPick;
+    private TextView txtResult;
+
     private Button btnGoGavle;
     private Button btnResetView;
+
+    private TextInputEditText etSearch;
+    private Button btnSearch;
+
+    private volatile boolean pickEnabled = false;
+
+    private LocatorTask locatorTask;
+    private final ExecutorService networkExecutor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // --- Find views ---
         drawerLayout = findViewById(R.id.drawerLayout);
         btnMenu = findViewById(R.id.btnMenu);
 
+        sceneView = findViewById(R.id.sceneView);
+
+        switchPick = findViewById(R.id.switchPick);
+        txtResult = findViewById(R.id.txtResult);
+
+        btnGoGavle = findViewById(R.id.btnGoGavle);
+        btnResetView = findViewById(R.id.btnResetView);
+
+        etSearch = findViewById(R.id.etSearch);
+        btnSearch = findViewById(R.id.btnSearch);
+
+        // --- Menu button ---
         btnMenu.setOnClickListener(v -> {
             if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 drawerLayout.closeDrawer(GravityCompat.START);
@@ -75,18 +98,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        // ArcGIS API key (dev mode)
+        // --- ArcGIS key ---
         ArcGISRuntimeEnvironment.setApiKey(ARCGIS_API_KEY);
 
-        sceneView = findViewById(R.id.sceneView);
-        switchPick = findViewById(R.id.switchPick);
-        txtResult = findViewById(R.id.txtResult);
-        btnGoGavle = findViewById(R.id.btnGoGavle);
-        btnResetView = findViewById(R.id.btnResetView);
-
-
-        // ---- Scene setup (your 3D globe) ----
+        // --- Scene setup (3D globe) ---
         ArcGISScene scene = new ArcGISScene(BasemapStyle.ARCGIS_IMAGERY);
 
         Surface surface = new Surface();
@@ -101,17 +116,31 @@ public class MainActivity extends AppCompatActivity {
         Camera start = new Camera(0.0, 0.0, 30_000_000, 0.0, 0.0, 0.0);
         sceneView.setViewpointCamera(start);
 
-        // ---- Toggle behavior ----
-        switchPick.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            pickEnabled = isChecked;
-            if (isChecked) {
-                txtResult.setText("Pick mode ON.");
-            } else {
-                txtResult.setText("Pick mode OFF.");
+        // --- Geocoding (search) ---
+        locatorTask = new LocatorTask(
+                "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer"
+        );
+
+        btnSearch.setOnClickListener(v -> {
+            String query = etSearch.getText() != null ? etSearch.getText().toString().trim() : "";
+            if (query.isEmpty()) {
+                txtResult.setText("Skriv en stad eller adress att söka på.");
+                return;
             }
+
+            txtResult.setText("Söker: " + query + " ...");
+            searchAndZoom(query);
+            drawerLayout.closeDrawer(GravityCompat.START);
         });
 
-        // ---- Tap listener (only active when pickEnabled == true) ----
+        // --- Toggle pick mode ---
+        switchPick.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            pickEnabled = isChecked;
+            txtResult.setText(isChecked ? "Pick mode ON. Tap the globe." : "Pick mode OFF.");
+            drawerLayout.closeDrawer(GravityCompat.START);
+        });
+
+        // --- Tap listener (only when pickEnabled == true) ---
         sceneView.setOnTouchListener(new DefaultSceneViewOnTouchListener(sceneView) {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
@@ -139,17 +168,18 @@ public class MainActivity extends AppCompatActivity {
                         "Picked:\nlat=%.5f, lon=%.5f\nFetching weather...", lat, lon));
 
                 fetchWeather(lat, lon);
-                return true; // consume tap
+                return true;
             }
         });
 
+        // --- Buttons ---
         btnGoGavle.setOnClickListener(v -> {
             Camera gavle = new Camera(
                     60.6749,   // lat
                     17.1413,   // lon
-                    20_000.0,  // altitude (city view)
+                    20_000.0,  // altitude
                     0.0,       // heading
-                    0.0,      // pitch (3D tilt)
+                    0.0,      // pitch
                     0.0
             );
             sceneView.setViewpointCameraAsync(gavle, 1.5f);
@@ -163,13 +193,42 @@ public class MainActivity extends AppCompatActivity {
             txtResult.setText("Reset view.");
             drawerLayout.closeDrawer(GravityCompat.START);
         });
+    }
 
+    private void searchAndZoom(String query) {
+        GeocodeParameters params = new GeocodeParameters();
+        params.setMaxResults(1);
+        params.getResultAttributeNames().add("*");
+
+        ListenableFuture<List<GeocodeResult>> future = locatorTask.geocodeAsync(query, params);
+
+        future.addDoneListener(() -> {
+            try {
+                List<GeocodeResult> results = future.get();
+                if (results == null || results.isEmpty()) {
+                    runOnUiThread(() -> txtResult.setText("Inga träffar för: " + query));
+                    return;
+                }
+
+                GeocodeResult best = results.get(0);
+
+                com.esri.arcgisruntime.geometry.Point location = best.getDisplayLocation();
+
+                // Flyg till platsen (10 km zoom)
+                Viewpoint vp = new Viewpoint(location, 10_000);
+                sceneView.setViewpointAsync(vp, 1.5f);
+
+                runOnUiThread(() -> txtResult.setText("Hittade: " + best.getLabel()));
+
+            } catch (Exception ex) {
+                runOnUiThread(() -> txtResult.setText("Sök misslyckades: " + ex.getMessage()));
+            }
+        });
     }
 
     private void fetchWeather(double lat, double lon) {
         networkExecutor.execute(() -> {
             try {
-                // Using OpenWeather "Current Weather" endpoint (units=metric)
                 String urlStr = String.format(Locale.US,
                         "https://api.openweathermap.org/data/2.5/weather?lat=%.6f&lon=%.6f&appid=%s&units=metric",
                         lat, lon, OPENWEATHER_API_KEY);
@@ -181,6 +240,7 @@ public class MainActivity extends AppCompatActivity {
                 conn.setReadTimeout(10_000);
 
                 int code = conn.getResponseCode();
+
                 BufferedReader reader = new BufferedReader(new InputStreamReader(
                         code >= 200 && code < 300 ? conn.getInputStream() : conn.getErrorStream()
                 ));
