@@ -1,6 +1,5 @@
 // ESRI API nyckel: AAPTxy8BH1VEsoebNVZXo8HurGuzNiuipj3FeKc7J3bGv8PxaLmSPdL30j-EBd9QLoGMD_VzMMqRVcQxkejHMwvYAPzmagdF8iDpZwAUiIQlizCbl8yghTT45j_VO7pOHA4onCcwzIoBWRBi3urDOLYz28bkKbm-Z321SONwSwbObxe_OAGCpOorwmIq4JTpNLhwgPfp49fwIAl0Sxu5HvKJhQ1LRTdO8GjxwTI555-IKuE.AT1_5p5pSRQ3
 // OpenWeather API nyckel: 27339e03b1ff3e028133a088da401eac
-// ESRI API nyckel: (lägg din nyckel här om du kör "dev mode" lokalt – committa inte till publikt git)
 
 package com.example.weatherapp;
 
@@ -175,11 +174,11 @@ public class MainActivity extends AppCompatActivity {
         // --- Buttons ---
         btnGoGavle.setOnClickListener(v -> {
             Camera gavle = new Camera(
-                    60.6749,   // lat
-                    17.1413,   // lon
-                    20_000.0,  // altitude
-                    0.0,       // heading
-                    0.0,      // pitch
+                    60.6749,
+                    17.1413,
+                    20_000.0,
+                    0.0,
+                    0.0,
                     0.0
             );
             sceneView.setViewpointCameraAsync(gavle, 1.5f);
