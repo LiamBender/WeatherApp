@@ -5,13 +5,13 @@ plugins {
 android {
     namespace = "com.example.weatherapp"
     compileSdk {
-        version = release(36)
+        version = release(35)
     }
 
     defaultConfig {
         applicationId = "com.example.weatherapp"
-        minSdk = 24
-        targetSdk = 36
+        minSdk = 28
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

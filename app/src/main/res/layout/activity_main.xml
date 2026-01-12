@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- MAIN CONTENT -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -20,7 +19,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Hamburger button -->
         <ImageButton
             android:id="@+id/btnMenu"
             android:layout_width="48dp"
@@ -32,7 +30,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- RESULT TEXT OVERLAY (on the normal screen) -->
         <TextView
             android:id="@+id/txtResult"
             android:layout_width="0dp"
@@ -48,7 +45,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- SIDE MENU (drawer) -->
     <LinearLayout
         android:id="@+id/sideMenu"
         android:layout_width="280dp"
