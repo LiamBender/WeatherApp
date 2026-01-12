@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         SceneView sceneView = findViewById(R.id.sceneView);
 
-        SwitchMaterial switchPick = findViewById(R.id.switchPick);
+        // SwitchMaterial switchPick = findViewById(R.id.switchPick);
         txtResult = findViewById(R.id.txtResult);
 
         Button btnGoGavle = findViewById(R.id.btnGoGavle);
@@ -74,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mapController.setup(sceneView, ARCGIS_API_KEY);
+        mapController.setPickEnabled(true);
+        txtResult.setText("Klicka på kartan för att få väderdata");
+
 
         mapController.setOnPickListener((lat, lon) -> {
             txtResult.setText(String.format(Locale.US,
@@ -92,11 +95,11 @@ public class MainActivity extends AppCompatActivity {
             });
         });
 
-        switchPick.setOnCheckedChangeListener((buttonView, isChecked) -> {
+       /* switchPick.setOnCheckedChangeListener((buttonView, isChecked) -> {
             mapController.setPickEnabled(isChecked);
             txtResult.setText(isChecked ? "Klickfunktion är på!" : "Klickfunktion är av!");
             drawerLayout.closeDrawer(GravityCompat.START);
-        });
+        }); */
 
         btnSearch.setOnClickListener(v -> {
             String query = etSearch.getText() != null ? etSearch.getText().toString().trim() : "";

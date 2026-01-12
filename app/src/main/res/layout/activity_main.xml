@@ -62,12 +62,6 @@
             android:textSize="18sp"
             android:paddingBottom="12dp"/>
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchPick"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Välj koordinater" />
-
         <Button
             android:id="@+id/btnGoGavle"
             android:layout_width="match_parent"
