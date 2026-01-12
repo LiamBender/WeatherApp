@@ -25,10 +25,10 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     private static final String ARCGIS_API_KEY =
-            "";
+            "AAPTxy8BH1VEsoebNVZXo8HurGuzNiuipj3FeKc7J3bGv8PxaLmSPdL30j-EBd9QLoGMD_VzMMqRVcQxkejHMwvYAPzmagdF8iDpZwAUiIQlizCbl8yghTT45j_VO7pOHA4onCcwzIoBWRBi3urDOLYz28bkKbm-Z321SONwSwbObxe_OAGCpOorwmIq4JTpNLhwgPfp49fwIAl0Sxu5HvKJhQ1LRTdO8GjxwTI555-IKuE.AT1_5p5pSRQ3";
 
     private static final String OPENWEATHER_API_KEY =
-            "";
+            "27339e03b1ff3e028133a088da401eac";
 
     private DrawerLayout drawerLayout;
     private ImageButton btnMenu;

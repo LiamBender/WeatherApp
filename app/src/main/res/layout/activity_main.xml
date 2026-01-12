@@ -66,21 +66,21 @@
             android:id="@+id/switchPick"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pick coordinates" />
+            android:text="Välj koordinater" />
 
         <Button
             android:id="@+id/btnGoGavle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Zoom to Gävle" />
+            android:text="Zooma till Gävle" />
 
         <Button
             android:id="@+id/btnResetView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Reset view" />
+            android:text="Återställ view" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
