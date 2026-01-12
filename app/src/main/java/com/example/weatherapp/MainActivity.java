@@ -17,9 +17,9 @@ import java.util.Locale;
 
 /**
  * MainActivity har ansvaret för appens användargränssnitt och kopplar ihop kartan (MapController) med väderhämtningen (WeatherService)
- * <p>
- *     Activityn hanterar UI-interaktioner som t.ex. meny/drawer, sökning, val av punkt på kartan och presenterar väderdata för användaren
- * </p>
+ *
+ * Activityn hanterar UI-interaktioner som t.ex. meny/drawer, sökning, val av punkt på kartan och presenterar väderdata för användaren
+ *
  */
 
 public class MainActivity extends AppCompatActivity {

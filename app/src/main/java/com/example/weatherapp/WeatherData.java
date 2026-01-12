@@ -4,10 +4,10 @@ import java.util.Locale;
 
 /**
  * WeatherData är väderinformation för en specifik plats
- * <p>
+ *
  * Klassen används för att väderdata hämtas från OpenWeatherMapAPI
  * API:n innehåller information om temperatur, luftfuktighet, väderförhållanden, vind samt koordinater
- * </p>
+ *
  */
 public class WeatherData {
 
