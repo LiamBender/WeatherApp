@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">WeatherApp</string>
+    <string name="weather_failed">Väder hämtning misslyckad:\n</string>
+    <string name="write_town">Skriv en stad eller adress att söka på.</string>
+    <string name="searching">"Söker: "</string>
+    <string name="found">"Hittade: "</string>
+    <string name="search_failed">"Sök misslyckades: "</string>
+    <string name="restore_view">Återställ view.</string>
+    <string name="zoome_to_gavle">Zoomar till Gävle...</string>
 </resources>

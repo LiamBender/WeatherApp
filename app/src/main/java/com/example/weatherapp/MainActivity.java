@@ -17,9 +17,9 @@ import java.util.Locale;
 
 /**
  * MainActivity har ansvaret för appens användargränssnitt och kopplar ihop kartan (MapController) med väderhämtningen (WeatherService)
- *
+ * <p>
  * Activityn hanterar UI-interaktioner som t.ex. meny/drawer, sökning, val av punkt på kartan och presenterar väderdata för användaren
- *
+ * </p>
  */
 
 public class MainActivity extends AppCompatActivity {
@@ -31,18 +31,10 @@ public class MainActivity extends AppCompatActivity {
             "27339e03b1ff3e028133a088da401eac";
 
     private DrawerLayout drawerLayout;
-    private ImageButton btnMenu;
 
-    private SceneView sceneView;
-
-    private SwitchMaterial switchPick;
     private TextView txtResult;
 
-    private Button btnGoGavle;
-    private Button btnResetView;
-
     private TextInputEditText etSearch;
-    private Button btnSearch;
 
     private MapController mapController;
     private WeatherService weatherService;
@@ -57,18 +49,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         drawerLayout = findViewById(R.id.drawerLayout);
-        btnMenu = findViewById(R.id.btnMenu);
+        ImageButton btnMenu = findViewById(R.id.btnMenu);
 
-        sceneView = findViewById(R.id.sceneView);
+        SceneView sceneView = findViewById(R.id.sceneView);
 
-        switchPick = findViewById(R.id.switchPick);
+        SwitchMaterial switchPick = findViewById(R.id.switchPick);
         txtResult = findViewById(R.id.txtResult);
 
-        btnGoGavle = findViewById(R.id.btnGoGavle);
-        btnResetView = findViewById(R.id.btnResetView);
+        Button btnGoGavle = findViewById(R.id.btnGoGavle);
+        Button btnResetView = findViewById(R.id.btnResetView);
 
         etSearch = findViewById(R.id.etSearch);
-        btnSearch = findViewById(R.id.btnSearch);
+        Button btnSearch = findViewById(R.id.btnSearch);
 
         mapController = new MapController();
         weatherService = new WeatherService(OPENWEATHER_API_KEY);
@@ -95,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onError(String message) {
-                    runOnUiThread(() -> txtResult.setText("Väder hämtning misslyckad:\n" + message));
+                    runOnUiThread(() -> txtResult.setText(getString(R.string.weather_failed) + message));
                 }
             });
         });
@@ -109,21 +101,21 @@ public class MainActivity extends AppCompatActivity {
         btnSearch.setOnClickListener(v -> {
             String query = etSearch.getText() != null ? etSearch.getText().toString().trim() : "";
             if (query.isEmpty()) {
-                txtResult.setText("Skriv en stad eller adress att söka på.");
+                txtResult.setText(R.string.write_town);
                 return;
             }
 
-            txtResult.setText("Söker: " + query + " ...");
+            txtResult.setText(getString(R.string.searching) + query + " ...");
 
             mapController.searchAndZoom(query, new MapController.SearchCallback() {
                 @Override
                 public void onSuccess(String label) {
-                    runOnUiThread(() -> txtResult.setText("Hittade: " + label));
+                    runOnUiThread(() -> txtResult.setText(getString(R.string.found) + label));
                 }
 
                 @Override
                 public void onError(String message) {
-                    runOnUiThread(() -> txtResult.setText("Sök misslyckades: " + message));
+                    runOnUiThread(() -> txtResult.setText(getString(R.string.search_failed) + message));
                 }
             });
 
@@ -132,13 +124,13 @@ public class MainActivity extends AppCompatActivity {
 
         btnGoGavle.setOnClickListener(v -> {
             mapController.zoomToGavle();
-            txtResult.setText("Zoomar till Gävle...");
+            txtResult.setText(R.string.zoome_to_gavle);
             drawerLayout.closeDrawer(GravityCompat.START);
         });
 
         btnResetView.setOnClickListener(v -> {
             mapController.resetView();
-            txtResult.setText("Återställ view.");
+            txtResult.setText(R.string.restore_view);
             drawerLayout.closeDrawer(GravityCompat.START);
         });
     }
